@@ -21,7 +21,7 @@ const signup = async (req, res) => {
     if (password.length < 6) {
       return res.status(400).json({
         success: false,
-        message: "Password must me atleast 6 characters",
+        message: "Password must be atleast 6 characters",
       });
     }
 
@@ -29,7 +29,7 @@ const signup = async (req, res) => {
     if (existingUserByEmail) {
       return res
         .status(400)
-        .json({ success: false, message: "email already taken" });
+        .json({ success: false, message: "Email already taken" });
     }
 
     const existingUserByUsername = await User.findOne({ username: username });
@@ -52,8 +52,8 @@ const signup = async (req, res) => {
       password: hashedPassword,
     });
 
-    generateTokenAndSetCookie(newUser._id, res);
     await newUser.save();
+    generateTokenAndSetCookie(newUser._id, res);
 
     res.status(201).json({
       success: true,
@@ -117,7 +117,7 @@ const logout = async (req, res) => {
     res.clearCookie("jwt", options);
     res
       .status(200)
-      .json({ success: false, message: "Logged out Successfully" });
+      .json({ success: true, message: "Logged out Successfully" });
   } catch (error) {
     console.log(`Error in logout Controller: ${error.message}`);
     res.status(500).json({ success: false, error: "Internal Server error" });
