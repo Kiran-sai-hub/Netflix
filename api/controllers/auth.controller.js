@@ -115,13 +115,20 @@ const logout = async (req, res) => {
       sameSite: "strict",
     };
     res.clearCookie("jwt", options);
-    res
-      .status(200)
-      .json({ success: true, message: "Logged out Successfully" });
+    res.status(200).json({ success: true, message: "Logged out Successfully" });
   } catch (error) {
     console.log(`Error in logout Controller: ${error.message}`);
     res.status(500).json({ success: false, error: "Internal Server error" });
   }
 };
 
-export { signup, login, logout };
+const authCheck = async (req, res) => {
+  try {
+    res.status(200).json({ success: true, user: req.user });
+  } catch (error) {
+    console.log(`Error in authCheck Controller: ${error.message}`);
+    res.status(500).json({ success: false, error: "Internal Server error" });
+  }
+};
+
+export { signup, login, logout, authCheck };
