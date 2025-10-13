@@ -63,8 +63,9 @@ function LoginPage() {
               className="w-full py-2 bg-red-600 text-white font-semibold rounded-md
               hover:bg-red-700"
               onClick={handleLogin}
+              disabled={isLoggingIn}
               >
-              Log In
+              {isLoggingIn ? "Logging In..." : "Log In"}
             </button>
           </form>
           <div className="text-center text-gray-400">
