@@ -16,7 +16,7 @@ const searchPerson = async (req, res) => {
     }
 
     await User.findByIdAndUpdate(req.user._id, {
-      $push: {
+      $addToSet: {
         searchHistory: {
           id: response.results[0].id,
           image: response.results[0].profile_path,
@@ -49,7 +49,7 @@ const searchMovie = async (req, res) => {
     }
 
     await User.findByIdAndUpdate(req.user._id, {
-      $push: {
+      $addToSet: {
         searchHistory: {
           id: response.results[0].id,
           image: response.results[0].poster_path,
@@ -82,7 +82,7 @@ const searchTv = async (req, res) => {
     }
 
     await User.findByIdAndUpdate(req.user._id, {
-      $push: {
+      $addToSet: {
         searchHistory: {
           id: response.results[0].id,
           image: response.results[0].poster_path,
