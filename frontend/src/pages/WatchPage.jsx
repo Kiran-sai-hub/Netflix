@@ -299,7 +299,7 @@ const WatchPage = () => {
               <div className="flex items-center justify-between px-5 py-3 bg-zinc-800 border-b border-zinc-700">
                 <div className="flex items-center gap-2 text-sm font-semibold text-zinc-300">
                   <Unlock size={15} className="text-red-500" />
-                  Secret Stream — {content?.title || content?.name}
+                  Secret Stream - {content?.title || content?.name}
                 </div>
                 <button
                   onClick={() => {
