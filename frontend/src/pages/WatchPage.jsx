@@ -359,7 +359,7 @@ const WatchPage = () => {
                     src={`/api/v1/stream/embed?t=${streamToken}${contentType === "tv" ? `&s=${season}&e=${episode}` : ""}`}
                     className="absolute inset-0 w-full h-full"
                     allowFullScreen
-                    allow="autoplay; fullscreen"
+                    allow="autoplay; fullscreen *"
                     title="Secret Stream"
                   />
                 </div>
