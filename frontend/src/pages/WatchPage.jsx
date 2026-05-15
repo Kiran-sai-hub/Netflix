@@ -25,8 +25,7 @@ const WatchPage = () => {
   const [codeInput, setCodeInput] = useState("");
   const [codeError, setCodeError] = useState("");
   const [streamUnlocked, setStreamUnlocked] = useState(false);
-  const [streamSrc, setStreamSrc] = useState("");
-  const [verifiedCode, setVerifiedCode] = useState("");
+  const [streamToken, setStreamToken] = useState("");
   // TV controls
   const [season, setSeason] = useState(1);
   const [episode, setEpisode] = useState(1);
@@ -86,10 +85,9 @@ const WatchPage = () => {
   // Reset stream when navigating to a new title
   useEffect(() => {
     setStreamUnlocked(false);
-    setStreamSrc("");
+    setStreamToken("");
     setCodeInput("");
     setCodeError("");
-    setVerifiedCode("");
     setTvReady(false);
     setSeason(1);
     setEpisode(1);
@@ -117,38 +115,15 @@ const WatchPage = () => {
         code: codeInput,
         contentId: id,
         contentType,
-        season,
-        episode,
       });
-      setVerifiedCode(codeInput);
+      setStreamToken(res.data.streamToken);
       setCodeError("");
       setSecretDialogOpen(false);
-      if (contentType === "movie") {
-        setStreamSrc(res.data.streamUrl);
-        setStreamUnlocked(true);
-      } else {
-        setStreamUnlocked(true);
-        setTvReady(false);
-      }
+      setStreamUnlocked(true);
+      if (contentType === "tv") setTvReady(false);
     } catch {
       setCodeError("Wrong code. Try again.");
       setCodeInput("");
-    }
-  };
-
-  const loadTvStream = async () => {
-    try {
-      const res = await axios.post("/api/v1/stream/unlock", {
-        code: verifiedCode,
-        contentId: id,
-        contentType,
-        season,
-        episode,
-      });
-      setStreamSrc(res.data.streamUrl);
-      setTvReady(true);
-    } catch {
-      setStreamUnlocked(false);
     }
   };
   // ────────────────────────────────────────────────────────────────────────────
@@ -329,7 +304,7 @@ const WatchPage = () => {
                 <button
                   onClick={() => {
                     setStreamUnlocked(false);
-                    setStreamSrc("");
+                    setStreamToken("");
                     setTvReady(false);
                   }}
                   className="text-zinc-400 hover:text-white transition-colors"
@@ -367,7 +342,7 @@ const WatchPage = () => {
                     </label>
                   </div>
                   <button
-                    onClick={loadTvStream}
+                    onClick={() => setTvReady(true)}
                     className="bg-red-600 hover:bg-red-700 text-white font-semibold
                       px-6 py-2 rounded-lg flex items-center gap-2 transition-colors"
                   >
@@ -378,10 +353,10 @@ const WatchPage = () => {
               )}
 
               {/* Iframe */}
-              {streamSrc && (contentType === "movie" || tvReady) && (
+              {streamToken && (contentType === "movie" || tvReady) && (
                 <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
                   <iframe
-                    src={streamSrc}
+                    src={`/api/v1/stream/embed?t=${streamToken}${contentType === "tv" ? `&s=${season}&e=${episode}` : ""}`}
                     className="absolute inset-0 w-full h-full"
                     allowFullScreen
                     allow="autoplay; fullscreen"
