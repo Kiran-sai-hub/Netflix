@@ -48,16 +48,12 @@ const Navbar = () => {
 
       {isMobileMenuOpen && (
         <div className='w-full sm:hidden mt-4 z-50 bg-black border rounded border-gray-800'>
-          <Link to={"/"} className='block hover:text-gray-300 p-2' onClick={() => {
-            setContentType("movie");
-            toggleMobileMenu;
-            }}>
+          <Link to={"/"} className='block hover:text-gray-300 p-2' 
+            onClick={() => { setContentType("movie"); toggleMobileMenu(); }}>
 						Movies
 					</Link>
-          <Link to={"/"} className='block hover:text-gray-300 p-2' onClick={() => {
-            setContentType("tv");
-            toggleMobileMenu;
-            }}>
+          <Link to={"/"} className='block hover:text-gray-300 p-2' 
+            onClick={() => { setContentType("tv"); toggleMobileMenu();}}>
 						Tv Shows
 					</Link>
 					<Link to={"/history"} className='block hover:text-gray-300 p-2' onClick={toggleMobileMenu}>
