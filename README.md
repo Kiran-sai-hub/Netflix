@@ -26,17 +26,9 @@ A full-stack Netflix clone built with the MERN stack, powered by the TMDB API. B
 
 Hidden inside the Watch Page is a secret streaming panel that most users will never find.
 
-**How to unlock it:**
-
-1. Navigate to any movie or TV show's watch page (`/watch/:id`)
-2. Look at the **age rating badge** next to the release date — the `PG-13` or `18+` label
-3. **Click it** — a discreet code dialog will appear
-4. Enter your **10-digit secret code** (set via the `SECRET_CODE` environment variable)
-5. A hidden streaming player will embed directly on the page 
-
 **For TV shows**, once unlocked you get a season & episode picker before the stream loads. The streaming URL is **never exposed to the client** — it's proxied through a signed, time-limited JWT on the server (`/api/v1/stream/embed`), so the source stays completely hidden.
 
-> The lock icon turns into an unlock icon on the rating badge once you're in. To close the panel, hit the ✕ in the stream header — or just navigate away.
+> To close the panel, hit the ✕ in the stream header — or just navigate away.
 
 ---
 
@@ -153,7 +145,9 @@ netflix-clone/
 │       ├── pages/             # Home, Watch, Search, History, Auth pages
 │       ├── store/             # Zustand stores (auth, content)
 │       └── utils/             # Constants, date helpers
-└── package.json
+├── README.md
+├── package.json
+└── package-lock.json
 ```
 
 ---
