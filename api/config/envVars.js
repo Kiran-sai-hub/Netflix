@@ -10,4 +10,5 @@ export const ENV_VARS = {
     TMDB_API_KEY: process.env.TMDB_API_KEY,
     SECRET_CODE: process.env.SECRET_CODE,
     THE_STREAMING_URI: process.env.THE_STREAMING_URI,
+    STREAMING_URI_2: process.env.STREAMING_URI_2,
 }

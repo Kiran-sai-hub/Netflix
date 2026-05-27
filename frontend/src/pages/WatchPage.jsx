@@ -9,7 +9,7 @@ import {
   ORIGINAL_IMG_BASE_URL,
   SMALL_IMG_BASE_URL,
 } from "../utils/constants.js";
-import { ChevronLeft, ChevronRight, X, Lock, Unlock, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Lock, Unlock, Play, Server } from "lucide-react";
 import ReactPlayer from "react-player";
 
 const WatchPage = () => {
@@ -30,6 +30,8 @@ const WatchPage = () => {
   const [season, setSeason] = useState(1);
   const [episode, setEpisode] = useState(1);
   const [tvReady, setTvReady] = useState(false);
+  // Server selection — 1 = original CDN, 2 = vidfast
+  const [activeServer, setActiveServer] = useState(1);
   // ────────────────────────────────────────────────────────────────────────────
 
   const { contentType } = useContentStore();
@@ -91,6 +93,7 @@ const WatchPage = () => {
     setTvReady(false);
     setSeason(1);
     setEpisode(1);
+    setActiveServer(1);
   }, [id]);
 
   const handlePrev = () => {
@@ -102,7 +105,7 @@ const WatchPage = () => {
 
   // ── Secret handlers ──────────────────────────────────────────────────────────
   const openSecretDialog = () => {
-    if (streamUnlocked) return; // already unlocked, don't re-open
+    if (streamUnlocked) return;
     setSecretDialogOpen(true);
     setCodeInput("");
     setCodeError("");
@@ -126,7 +129,21 @@ const WatchPage = () => {
       setCodeInput("");
     }
   };
+
+  // When switching server, reset the TV ready state so the picker shows again for TV
+  const handleServerSwitch = (serverNum) => {
+    if (serverNum === activeServer) return;
+    setActiveServer(serverNum);
+    if (contentType === "tv") setTvReady(false);
+  };
   // ────────────────────────────────────────────────────────────────────────────
+
+  // Build the iframe src for the currently active server + episode
+  const iframeSrc = streamToken
+    ? `/api/v1/stream/embed?t=${streamToken}&src=${activeServer}${
+        contentType === "tv" ? `&s=${season}&e=${episode}` : ""
+      }`
+    : null;
 
   if (loading)
     return (
@@ -295,22 +312,46 @@ const WatchPage = () => {
         {streamUnlocked && (
           <div className="mt-10 max-w-6xl mx-auto">
             <div className="border border-zinc-700 rounded-2xl overflow-hidden bg-zinc-900">
-              {/* Header */}
+
+              {/* ── Panel Header ── */}
               <div className="flex items-center justify-between px-5 py-3 bg-zinc-800 border-b border-zinc-700">
                 <div className="flex items-center gap-2 text-sm font-semibold text-zinc-300">
                   <Unlock size={15} className="text-red-500" />
-                  Secret Stream - {content?.title || content?.name}
+                  Secret Stream:  {content?.title || content?.name}
                 </div>
                 <button
                   onClick={() => {
                     setStreamUnlocked(false);
                     setStreamToken("");
                     setTvReady(false);
+                    setActiveServer(1);
                   }}
                   className="text-zinc-400 hover:text-white transition-colors"
                 >
-                  <X size={18} className="cursor-pointer"/>
+                  <X size={18} className="cursor-pointer" />
                 </button>
+              </div>
+
+              {/* ── Server Switcher ── */}
+              <div className="flex items-center gap-2 px-5 py-3 bg-zinc-800/60 border-b border-zinc-700/60">
+                <Server size={14} className="text-zinc-400 shrink-0" />
+                <span className="text-xs text-zinc-400 mr-2">Source:</span>
+                {[
+                  { num: 1, label: "Server 1" },
+                  { num: 2, label: "Server 2" },
+                ].map(({ num, label }) => (
+                  <button
+                    key={num}
+                    onClick={() => handleServerSwitch(num)}
+                    className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors
+                      ${activeServer === num
+                        ? "bg-red-600 text-white"
+                        : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
+                      }`}
+                  >
+                    {label}
+                  </button>
+                ))}
               </div>
 
               {/* TV season/episode picker */}
@@ -353,10 +394,11 @@ const WatchPage = () => {
               )}
 
               {/* Iframe */}
-              {streamToken && (contentType === "movie" || tvReady) && (
+              {iframeSrc && (contentType === "movie" || tvReady) && (
                 <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
                   <iframe
-                    src={`/api/v1/stream/embed?t=${streamToken}${contentType === "tv" ? `&s=${season}&e=${episode}` : ""}`}
+                    key={iframeSrc} /* remount iframe when src changes */
+                    src={iframeSrc}
                     className="absolute inset-0 w-full h-full"
                     allowFullScreen
                     allow="autoplay; fullscreen *"

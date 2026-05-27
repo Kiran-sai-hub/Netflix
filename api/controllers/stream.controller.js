@@ -19,7 +19,7 @@ const unlockStream = (req, res) => {
 };
 
 const serveStream = (req, res) => {
-  const { t, s, e } = req.query;
+  const { t, s, e, src } = req.query;
 
   if (!t) return res.status(400).json({ success: false, message: "Missing stream token" });
 
@@ -35,14 +35,26 @@ const serveStream = (req, res) => {
   }
 
   const { contentId, contentType } = payload;
+  const source = src === "2" ? 2 : 1;
+  const season = Math.max(1, parseInt(s) || 1);
+  const episode = Math.max(1, parseInt(e) || 1);
+
   let targetUrl;
 
-  if (contentType === "movie") {
-    targetUrl = `https://${ENV_VARS.THE_STREAMING_URI}/embed/movie/${contentId}?color=e50914`;
+  if (source === 1) {
+    // Original CDN — colour-branded embed
+    if (contentType === "movie") {
+      targetUrl = `https://${ENV_VARS.THE_STREAMING_URI}/embed/movie/${contentId}?color=e50914`;
+    } else {
+      targetUrl = `https://${ENV_VARS.THE_STREAMING_URI}/embed/tv/${contentId}/${season}/${episode}?color=e50914&episodeSelector=true`;
+    }
   } else {
-    const season = Math.max(1, parseInt(s) || 1);
-    const episode = Math.max(1, parseInt(e) || 1);
-    targetUrl = `https://${ENV_VARS.THE_STREAMING_URI}/embed/tv/${contentId}/${season}/${episode}?color=e50914&episodeSelector=true`;
+    // Server 2
+    if (contentType === "movie") {
+      targetUrl = `https://${ENV_VARS.STREAMING_URI_2}/movie/${contentId}?theme=e50914`;
+    } else {
+      targetUrl = `https://${ENV_VARS.STREAMING_URI_2}/tv/${contentId}/${season}/${episode}?theme=e50914`;
+    }
   }
 
   res.redirect(302, targetUrl);
